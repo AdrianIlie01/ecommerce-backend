@@ -5,10 +5,14 @@ services:
     image: mysql:5.7
     container_name: db-1
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ecommerce
-      MYSQL_USER: ecommerce
-      MYSQL_PASSWORD: ecommerce
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: ecommerce
+#      MYSQL_USER: ecommerce
+#      MYSQL_PASSWORD: ecommerce
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADDON_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_ADDON_DB}
+      MYSQL_USER: ${MYSQL_ADDON_USER}
+      MYSQL_PASSWORD: ${MYSQL_ADDON_PASSWORD}
     ports:
       - "3306:3306"
   phpmyadmin:
@@ -17,8 +21,10 @@ services:
     links:
       - db
     environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
+#      PMA_HOST: db
+#      PMA_PORT: 3306
+      PMA_HOST: ${MYSQL_ADDON_HOST}
+      PMA_PORT: ${MYSQL_ADDON_PORT}
       PMA_ARBITRARY: 1
     restart: always
     ports:

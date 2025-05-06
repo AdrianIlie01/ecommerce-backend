@@ -7,6 +7,6 @@ async function bootstrap() {
     exposedHeaders: ['x-forwarded-for'],
   });
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 3001);
 }
 bootstrap();

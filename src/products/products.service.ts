@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { Type } from '../shared/type';
 
 @Injectable()
 export class ProductsService {
@@ -43,6 +44,20 @@ export class ProductsService {
     try {
       const products = await ProductEntity.find();
       return products;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+  }
+
+  async getProductsFiltered(type: Type) {
+    try {
+      console.log(type);
+
+      if (type === 'all-products') {
+        return this.findAll();
+      }
+      const filters = type ? { where: { type } } : {};
+      return await ProductEntity.find(filters);
     } catch (e) {
       throw new BadRequestException(e.message);
     }

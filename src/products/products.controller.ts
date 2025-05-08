@@ -16,6 +16,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
+import { Type } from '../shared/type';
 
 @Controller('products')
 export class ProductsController {
@@ -51,6 +52,11 @@ export class ProductsController {
     } catch (e) {
       return res.status(HttpStatus.BAD_REQUEST).json(e);
     }
+  }
+
+  @Get('filtered')
+  getProducts(@Query('type') type?: Type) {
+    return this.productsService.getProductsFiltered(type);
   }
 
   @Get(':id')

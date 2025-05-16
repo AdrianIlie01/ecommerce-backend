@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Redirect,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -17,12 +18,16 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
 import { Type } from '../shared/type';
+import { UserService } from '../user/user.service';
 
 @Controller('products')
 export class ProductsController {
   private stripe: Stripe;
 
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private userService: UserService,
+  ) {}
 
   @Get('image/:name')
   async getThumbnail(@Res() res, @Param('name') name: string) {
@@ -45,8 +50,21 @@ export class ProductsController {
     }
   }
   @Get()
-  async findAll(@Res() res) {
+  async findAll(@Res() res, @Req() req) {
     try {
+      const ip = (req.headers['x-forwarded-for'] ||
+        req.socket.remoteAddress) as string;
+      const userAgent = req.headers['user-agent'];
+
+      console.log(`IP: ${ip}`);
+      console.log(`User-Agent: ${userAgent}`);
+
+      const userExt = await this.userService.findIp(ip);
+
+      if (!userExt) {
+        await this.userService.create({ ip: ip, userAgent: userAgent });
+      }
+
       const product = await this.productsService.findAll();
       return res.status(HttpStatus.CREATED).json(product);
     } catch (e) {

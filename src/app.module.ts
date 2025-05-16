@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductEntity } from './products/entities/product.entity';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
 import { UserModule } from './user/user.module';
@@ -26,7 +25,7 @@ import { UserModule } from './user/user.module';
       username: process.env.MYSQL_ADDON_USER,
       password: process.env.MYSQL_ADDON_PASSWORD,
       database: process.env.MYSQL_ADDON_DB,
-      entities: [ProductEntity],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     ProductsModule,

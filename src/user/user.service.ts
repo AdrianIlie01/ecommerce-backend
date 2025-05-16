@@ -1,15 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const user = new User();
+      user.ip = createUserDto.ip;
+      user.user_agent = createUserDto.userAgent;
+      await user.save();
+
+      console.log('User created successfully');
+
+      return { message: 'User created successfully', user };
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findIp(ip: string) {
+    try {
+      const user = await User.find({
+        where: {
+          ip: ip,
+        },
+      });
+      return user.length !== 0;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

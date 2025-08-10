@@ -7,18 +7,17 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    exposedHeaders: ['x-forwarded-for'],
-    origin: '*',
+    origin: '*', // Permite toate originile (pentru test)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: false,
     allowedHeaders: [
-      'Access-Control-Allow-Origin',
-      'X-Requested-With',
       'Content-Type',
       'Authorization',
-      'Origin',
+      'X-Requested-With',
       'Accept',
+      'Origin',
     ],
+    exposedHeaders: ['x-forwarded-for'],
+    credentials: false,
   });
 
   await app.listen(process.env.PORT || 3001);

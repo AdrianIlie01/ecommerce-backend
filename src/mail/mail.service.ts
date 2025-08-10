@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import PDFDocument from 'pdfkit';
+import * as PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 import { CreatePdfDto } from './dto/create-pdf.dto';
 import * as nodemailer from 'nodemailer';

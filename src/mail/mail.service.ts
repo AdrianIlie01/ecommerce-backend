@@ -318,6 +318,8 @@ export class MailService {
 
       const pdfBuffer = writableBuffer.getContents();
 
+      console.log('PDF buffer length:', pdfBuffer?.length);
+
       if (!pdfBuffer) {
         throw new Error('Failed to generate PDF buffer');
       }
@@ -338,6 +340,10 @@ export class MailService {
     email: string,
   ) {
     try {
+      console.log('sendEmailWithPdfBuffer called');
+      console.log('pdfFileName:', pdfFileName);
+      console.log('Buffer length:', pdfBuffer?.length);
+
       const adminEmail = process.env.ADMIN_EMAIL;
 
       const transporter = nodemailer.createTransport({
@@ -364,8 +370,16 @@ export class MailService {
         ],
       };
 
+      console.log('Sending email with options:', {
+        from: mailOptions.from,
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        attachmentsCount: mailOptions.attachments.length,
+      });
+
       const info = await transporter.sendMail(mailOptions);
 
+      console.log('Email sent successfully', info);
       // fs.unlinkSync(pdfFilePath);
 
       return { message: 'email-sent' };

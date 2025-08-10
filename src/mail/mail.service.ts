@@ -7,6 +7,7 @@ import { pdfPath } from '../shared/pdf-path';
 import * as path from 'path';
 import { fontsPath } from '../shared/fonts-path';
 import { join } from 'path';
+import { WritableStreamBuffer } from 'stream-buffers';
 
 @Injectable()
 export class MailService {
@@ -16,22 +17,26 @@ export class MailService {
 
       const { products, costTotal, phoneNumber, email, address, name } =
         createPdf;
-      let pdfFileName = `${name.replace(/\s/g, '_')}_Order.pdf`;
+      const pdfFileName = `${name.replace(/\s/g, '_')}_Order.pdf`;
 
-      let counter = 1;
-      while (fs.existsSync(path.join(pdfPath, pdfFileName))) {
-        pdfFileName = `${name.replace(/\s/g, '_')}_Order_${counter}.pdf`;
-        counter++;
-      }
+      // let counter = 1;
+      // while (fs.existsSync(path.join(pdfPath, pdfFileName))) {
+      //   pdfFileName = `${name.replace(/\s/g, '_')}_Order_${counter}.pdf`;
+      //   counter++;
+      // }
 
-      if (!fs.existsSync(pdfPath)) {
-        fs.mkdirSync(pdfPath, { recursive: true });
-      }
+      // if (!fs.existsSync(pdfPath)) {
+      //   fs.mkdirSync(pdfPath, { recursive: true });
+      // }
 
-      const pdfFilePath = path.join(pdfPath, pdfFileName);
+      // const pdfFilePath = path.join(pdfPath, pdfFileName);
 
       const doc = new PDFDocument();
-      doc.pipe(fs.createWriteStream(pdfFilePath));
+
+      const writableBuffer = new WritableStreamBuffer();
+
+      doc.pipe(writableBuffer);
+      // doc.pipe(fs.createWriteStream(pdfFilePath));
 
       const fontLight = fs.readFileSync(
         path.join(fontsDirectory, 'RobotoSlab-Light.ttf'),
@@ -308,7 +313,17 @@ export class MailService {
 
       doc.end();
 
-      await this.sendEmailWithPdf(pdfFileName, email);
+      // wait to write PDF in buffer
+      await new Promise<void>((resolve) => doc.on('end', () => resolve()));
+
+      const pdfBuffer = writableBuffer.getContents();
+
+      if (!pdfBuffer) {
+        throw new Error('Failed to generate PDF buffer');
+      }
+
+      // send email with PDF-ul directly from buffer
+      await this.sendEmailWithPdfBuffer(pdfBuffer, pdfFileName, email);
 
       return 'email-sent';
       // return pdfFilePath;
@@ -317,10 +332,13 @@ export class MailService {
     }
   }
 
-  async sendEmailWithPdf(pdfFileName: string, email: string) {
+  async sendEmailWithPdfBuffer(
+    pdfBuffer: Buffer,
+    pdfFileName: string,
+    email: string,
+  ) {
     try {
       const adminEmail = process.env.ADMIN_EMAIL;
-      const pdfFilePath = join(pdfPath, pdfFileName);
 
       const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -340,7 +358,8 @@ export class MailService {
         attachments: [
           {
             filename: pdfFileName,
-            path: pdfFilePath,
+            content: pdfBuffer,
+            contentType: 'application/pdf',
           },
         ],
       };

@@ -10,6 +10,7 @@ async function bootstrap() {
     origin: ['https://ecommerce-frontend-t5lt.onrender.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
+      'Access-Control-Allow-Origin',
       'Content-Type',
       'Authorization',
       'X-Requested-With',
@@ -17,7 +18,7 @@ async function bootstrap() {
       'Origin',
     ],
     exposedHeaders: ['x-forwarded-for'],
-    credentials: false,
+    credentials: true,
   });
 
   app.use((req, res, next) => {

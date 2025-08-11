@@ -18,7 +18,9 @@ export class MailService {
 
       const { products, costTotal, phoneNumber, email, address, name } =
         createPdf;
-      const pdfFileName = `${name.replace(/\s/g, '_')}_Order.pdf`;
+      const safeName =
+        name && name.trim() !== '' ? name.replace(/\s/g, '_') : 'Ecommerce';
+      const pdfFileName = `${safeName}_Order.pdf`;
 
       // let counter = 1;
       // while (fs.existsSync(path.join(pdfPath, pdfFileName))) {

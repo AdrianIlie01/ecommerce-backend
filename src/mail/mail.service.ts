@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 import { CreatePdfDto } from './dto/create-pdf.dto';
 import * as nodemailer from 'nodemailer';
@@ -8,6 +7,7 @@ import * as path from 'path';
 import { fontsPath } from '../shared/fonts-path';
 import { join } from 'path';
 import { WritableStreamBuffer } from 'stream-buffers';
+import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class MailService {
@@ -31,7 +31,7 @@ export class MailService {
 
       // const pdfFilePath = path.join(pdfPath, pdfFileName);
 
-      const doc = new PDFDocument().default();
+      const doc = new PDFDocument();
 
       const writableBuffer = new WritableStreamBuffer();
 

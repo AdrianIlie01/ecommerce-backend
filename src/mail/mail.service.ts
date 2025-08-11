@@ -13,7 +13,8 @@ import PDFDocument from 'pdfkit';
 export class MailService {
   async generatePdf(createPdf: CreatePdfDto) {
     try {
-      const fontsDirectory = fontsPath;
+      // const fontsDirectory = fontsPath;
+      const fontsDirectory = path.join(__dirname, '..', '..', 'fonts');
 
       const { products, costTotal, phoneNumber, email, address, name } =
         createPdf;

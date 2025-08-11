@@ -31,7 +31,7 @@ export class MailService {
 
       // const pdfFilePath = path.join(pdfPath, pdfFileName);
 
-      const doc = new PDFDocument();
+      const doc = new PDFDocument().default();
 
       const writableBuffer = new WritableStreamBuffer();
 
